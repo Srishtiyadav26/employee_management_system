@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .attendance-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .page-title {
+            color: #3a3a3a;
+            font-weight: 600;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .page-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #007bff;
+        }
+        .attendance-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .attendance-table th {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        .attendance-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+        .attendance-table th:last-child {
+            border-top-right-radius: 8px;
+        }
+        .attendance-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .attendance-table tbody tr:hover {
+            background-color: #f1f8ff;
+        }
+        .attendance-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        @media (max-width: 768px) {
+            .attendance-container {
+                padding: 15px;
+            }
+            .attendance-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container attendance-container">
+        <h2 class="text-center page-title">Employee Attendance</h2>
+        
+        <div class="table-responsive">
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Login Date</th>
+                        <th>Login Time</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="record : ${attendanceList}">
+                        <td th:text="${record.employeeId}"></td>
+                        <td th:text="${record.employeeName}"></td>
+                        <td th:text="${#temporals.format(record.loginTime, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${#temporals.format(record.loginTime, 'HH:mm:ss')}"></td>
+                    </tr>
+                    <!-- Fallback data if attendanceList is empty -->
+                    <tr th:if="${attendanceList == null || #lists.isEmpty(attendanceList)}">
+                        <td colspan="3" class="text-center">No attendance records found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional, for any Bootstrap components that require JavaScript) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

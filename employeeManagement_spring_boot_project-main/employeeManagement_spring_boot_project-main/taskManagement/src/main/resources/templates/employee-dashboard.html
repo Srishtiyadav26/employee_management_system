@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard | Employee Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --topbar-height: 60px;
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --text-color: #5a5c69;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --info-color: #36b9cc;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8f9fc;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, #4e73df 0%, #3a66d8 100%);
+            color: white;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .sidebar-brand {
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin: 0 1rem;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid white;
+        }
+        
+        .nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Topbar Styles */
+        .topbar {
+            height: var(--topbar-height);
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 99;
+            background-color: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s;
+        }
+        
+        .topbar-divider {
+            width: 0;
+            border-right: 1px solid #e3e6f0;
+            height: calc(var(--topbar-height) - 2rem);
+            margin: auto 1rem;
+        }
+        
+        .content {
+            margin-left: var(--sidebar-width);
+            padding-top: calc(var(--topbar-height) + 1.5rem);
+            padding-right: 1.5rem;
+            padding-left: 1.5rem;
+            padding-bottom: 1.5rem;
+            min-height: 100vh;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        
+        .dropdown-menu {
+            font-size: 0.85rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .dropdown-item:active {
+            background-color: var(--primary-color);
+        }
+        
+        .logout-btn {
+            color: var(--primary-color);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .logout-btn:hover {
+            color: #224abe;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-card {
+            border-left: 4px solid;
+        }
+        
+        .dashboard-card.primary {
+            border-left-color: var(--primary-color);
+        }
+        
+        .dashboard-card.success {
+            border-left-color: var(--success-color);
+        }
+        
+        .dashboard-card.info {
+            border-left-color: var(--info-color);
+        }
+        
+        .dashboard-card.warning {
+            border-left-color: var(--warning-color);
+        }
+        
+        .dashboard-card .card-icon {
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+        
+        /* Task List */
+        .task-item {
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .task-item:hover {
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .task-item.high-priority {
+            border-left-color: var(--danger-color);
+        }
+        
+        .task-item.medium-priority {
+            border-left-color: var(--warning-color);
+        }
+        
+        .task-item.low-priority {
+            border-left-color: var(--info-color);
+        }
+        
+        .task-item.completed {
+            border-left-color: var(--success-color);
+        }
+        
+        .task-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .status-not-started {
+            background-color: var(--danger-color);
+        }
+        
+        .status-in-progress {
+            background-color: var(--warning-color);
+        }
+        
+        .status-in-review {
+            background-color: var(--info-color);
+        }
+        
+        .status-completed {
+            background-color: var(--success-color);
+        }
+        
+        /* Quick Links */
+        .quick-link-card {
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .quick-link-card .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .topbar, .content {
+                left: 0;
+                margin-left: 0;
+            }
+            
+            .sidebar-toggler {
+                display: block !important;
+            }
+        }
+        
+        /* Progress Bar */
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        /* Calendar */
+        .calendar-day {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 2px;
+            font-weight: bold;
+        }
+        
+        .calendar-day.today {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .calendar-day.event {
+            border: 2px solid var(--primary-color);
+        }
+    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="bi bi-person-badge me-2"></i>
+            <span>Employee Panel</span>
+        </div>
+        <hr class="sidebar-divider my-0">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" th:href="@{/employee/dashboard}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading ps-3 py-2 text-uppercase opacity-75 small">
+                Employee Services
+            </div>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/employee/self-service}">
+                    <i class="bi bi-person-lines-fill"></i>
+                    <span>Self Service Portal</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" th:href="@{/employee/tasks}">
+                    <i class="bi bi-list-task"></i>
+                    <span>My Tasks</span>
+                </a>
+            </li>
+            
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading ps-3 py-2 text-uppercase opacity-75 small">
+                Personal
+            </div>
+            <li class="nav-item">
+                <a class="nav-link" href="#" th:href="@{/employee/attendance}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" th:href="@{/employee/leave}">
+                    <i class="bi bi-calendar-x"></i>
+                    <span>Leave Requests</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <nav class="navbar navbar-expand h-100">
+            <div class="container-fluid">
+                <button class="btn sidebar-toggler d-md-none" type="button">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="d-none d-md-inline">
+                    <h5 class="mb-0 text-gray-800" th:text="${pageTitle}">My Dashboard</h5>
+                </div>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell-fill"></i>
+                            <span class="position-absolute top-25 start-75 translate-middle badge rounded-pill bg-danger">
+                                3
+                            </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                            <h6 class="dropdown-header">Notifications</h6>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="me-3">
+                                    <div class="icon-circle bg-primary text-white p-2">
+                                        <i class="bi bi-info-circle"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-gray-500">April 12, 2023</div>
+                                    <span>New task assigned: Website Redesign</span>
+                                </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="me-3">
+                                    <div class="icon-circle bg-success text-white p-2">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-gray-500">April 10, 2023</div>
+                                    <span>Your leave request has been approved</span>
+                                </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="me-3">
+                                    <div class="icon-circle bg-warning text-white p-2">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-gray-500">April 8, 2023</div>
+                                    <span>Reminder: Complete your timesheet</span>
+                                </div>
+                            </a>
+                            <a class="dropdown-item text-center small text-gray-500" href="#">Show All Notifications</a>
+                        </div>
+                    </li>
+                    <div class="topbar-divider"></div>
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="d-none d-lg-inline text-gray-600 small me-2" th:text="${employeeName}">John Doe</span>
+                            <img class="rounded-circle" src="https://via.placeholder.com/40" width="40" height="40" alt="Employee Profile">
+                        </a>
+                        
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    
+
+        
+
+            
+
+            
+            
+        </div>
+
+        
+
+        
+    </div>
+
+    
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+    
+</body>
+</html>

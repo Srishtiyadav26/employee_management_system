@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Service Portal | Employee Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --text-color: #5a5c69;
+            --border-color: #e3e6f0;
+            --success-color: #1cc88a;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8f9fc;
+            color: var(--text-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #4e73df;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #bac8f3;
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+        
+        .profile-header {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .profile-picture-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .profile-picture-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .profile-picture-edit:hover {
+            background-color: #2e59d9;
+            transform: scale(1.1);
+        }
+        
+        .employee-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .employee-title {
+            color: #858796;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .read-only-field {
+            background-color: #f8f9fc;
+            cursor: not-allowed;
+        }
+        
+        .form-text {
+            color: #858796;
+        }
+        
+        .save-indicator {
+            display: none;
+            color: var(--success-color);
+            margin-left: 1rem;
+            font-weight: 600;
+        }
+        
+        .save-indicator.show {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .save-indicator i {
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 767.98px) {
+            .profile-header {
+                padding: 1.5rem 0;
+            }
+            
+            .profile-picture-container {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .profile-picture {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .employee-name {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h4 class="mb-0 font-weight-bold text-primary">Employee Self Service Portal</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/employee/profile/update}" method="post" enctype="multipart/form-data" th:object="${employee}">
+                            
+                            
+                            <!-- Personal Information Section -->
+                            <div class="form-section">
+                                <h5 class="section-title">Personal Information</h5>
+                                <div class="row g-3">
+                                    <!-- Non-editable fields (left column) -->
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="employeeId" class="form-label">Employee ID</label>
+                                            <input type="text" class="form-control read-only-field" id="employeeId" th:value="${employee.id}" value="EMP-001" readonly>
+                                            <div class="form-text">Employee ID cannot be changed</div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="firstName" class="form-label">Name</label>
+                                            <input type="text" class="form-control read-only-field" id="firstName" th:value="${employee.name}"  readonly>
+                                            <div class="form-text">Contact HR to update your name</div>
+                                        </div>
+                                        
+                                        
+                                        
+                                        <div class="mb-3">
+                                            <label for="dateOfJoining" class="form-label">Date of Joining</label>
+                                            <input type="text" class="form-control read-only-field" id="dateOfJoining" th:value="${#dates.format(employee.dateOfJoining, 'dd MMM yyyy')}" value="15 Jan 2022" readonly>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="designation" class="form-label">Job Designation</label>
+                                            <input type="text" class="form-control read-only-field" id="designation" th:value="${employee.designation}" value="Software Engineer" readonly>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Editable fields (right column) -->
+                                    <div class="col-md-6">
+                                        
+                                        
+                                        <div class="mb-3">
+                                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNo" th:value="${employee.phoneNo}" value="+1 (555) 123-4567">
+                                        </div>
+                                        
+                                        
+            
+                                        <div class="mb-3">
+                                            <label for="gender" class="form-label">Gender</label>
+                                            <select class="form-select" id="gender" name="gender">
+                                                <option value="Male" th:selected="${employee.gender == 'Male'}">Male</option>
+                                                <option value="Female" th:selected="${employee.gender == 'Female'}">Female</option>
+                                                <option value="Other" th:selected="${employee.gender == 'Other'}">Other</option>
+                                                <option value="Prefer not to say" th:selected="${employee.gender == 'Prefer not to say'}">Prefer not to say</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="maritalStatus" class="form-label">Marital Status</label>
+                                            <select class="form-select" id="maritalStatus" name="maritalStatus">
+                                                <option value="Single" th:selected="${employee.maritalStatus == 'Single'}">Single</option>
+                                                <option value="Married" th:selected="${employee.maritalStatus == 'Married'}">Married</option>
+                                                <option value="Divorced" th:selected="${employee.maritalStatus == 'Divorced'}">Divorced</option>
+                                                <option value="Widowed" th:selected="${employee.maritalStatus == 'Widowed'}">Widowed</option>
+                                                <option value="Prefer not to say" th:selected="${employee.maritalStatus == 'Prefer not to say'}">Prefer not to say</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Contact Information Section -->
+                            <div class="form-section">
+                                <h5 class="section-title">Contact Information</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        
+                                        
+                                        <div class="mb-3">
+                                            <label for="city" class="form-label">City</label>
+                                            <input type="text" class="form-control" id="city" name="city" th:value="${employee.city}" value="New York">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="state" class="form-label">State/Province</label>
+                                            <input type="text" class="form-control" id="state" name="state" th:value="${employee.state}" value="NY">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="zipCode" class="form-label">Zip/Postal Code</label>
+                                            <input type="text" class="form-control" id="zipCode" name="zipCode" th:value="${employee.zipCode}" value="10001">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">Country</label>
+                                            <input type="text" class="form-control" id="country" name="country" th:value="${employee.country}" value="United States">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="alternateEmail" class="form-label">Alternate Email</label>
+                                            <input type="email" class="form-control" id="alternateEmail" name="alternateEmail" th:value="${employee.alternateEmail}" value="john.personal@email.com">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Emergency Contact Section -->
+                            <div class="form-section">
+                                <h5 class="section-title">Emergency Contact</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="emergencyContactName" class="form-label">Contact Name</label>
+                                            <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" th:value="${employee.emergencyContactName}" value="Jane Doe">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="emergencyContactRelation" class="form-label">Relationship</label>
+                                            <input type="text" class="form-control" id="emergencyContactRelation" name="emergencyContactRelation" th:value="${employee.emergencyContactRelation}" value="Spouse">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="emergencyContactPhone" class="form-label">Contact Phone</label>
+                                            <input type="tel" class="form-control" id="emergencyContactPhone" name="emergencyContactPhone" th:value="${employee.emergencyContactPhone}" value="+1 (555) 987-6543">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="emergencyContactEmail" class="form-label">Contact Email</label>
+                                            <input type="email" class="form-control" id="emergencyContactEmail" name="emergencyContactEmail" th:value="${employee.emergencyContactEmail}" value="jane.doe@email.com">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Form Actions -->
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn btn-outline-secondary me-2">Cancel</button>
+                                <button type="submit" class="btn btn-primary" id="saveButton">
+                                    Save Changes
+                                </button>
+                                <div class="save-indicator" id="saveIndicator">
+                                    <i class="bi bi-check-circle"></i> Changes saved successfully
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+</body>
+</html>
