@@ -4,7 +4,7 @@ The Integrated Employee Management System is a full-stack web application built 
 This project was developed as part of a learning initiative to explore backend development with Spring Boot.
 
 Tech Stack-:
-**Backend**: Java, Spring Boot, Spring MVC
+**Backend**: Java, Spring Boot, Spring Data JPA
 **Frontend**: Thymeleaf, HTML, CSS, Bootstrap
 **Database**: MySQL
 **Tools**: Maven, Git, GitHub
